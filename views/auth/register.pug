@@ -1,0 +1,29 @@
+extends ../layout/index
+
+block contenido
+    div.py-10
+        h1.text-4xl.my-10.font-normal.text-center Home
+            span.font-extrabold Seekers
+        h2.text-center.text-2xl.font-extrabold= pagina
+
+        div.mt-8.mx-auto.max-w-md
+            .bg-white.py-8.px-4.shadow
+                form.space-y-5
+                    div 
+                        label.block.text-sm.uppercase.text-gray-600.mb-2.font-bold(for="nombre") Nombre
+                        input#nombre.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Tu Nombre" type="text" name="nombre")
+                    div
+                        label.block.text-sm.uppercase.text-gray-600.mb-2.font-bold(for="email") Correo electrónico
+                        input#email.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Tu E-mail" type="email" name="email")
+                    div
+                        label.block.text-sm.uppercase.text-gray-600.mb-2.font-bold(for="password") Crea una contraseña
+                        input#password.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="¡Es un secreto!" type="password" name="password")
+                    div
+                        label.block.text-sm.uppercase.text-gray-600.mb-2.font-bold(for="repetir_password") Repetir contraseña
+                        input#repetir_password.w-full.px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Repite tu contraseña" type="password" name="repetir_password")
+                    
+                    .flex.items.center.justify-between.py-2.mt-0 
+                        a(href="/auth/login").text-gray-500.text-xs ¿Ya tienes cuenta? Inicia Sesión
+                        a(href="/auth/forgottenPassword").text-gray-500.text-xs ¿Olvidaste tu contraseña? Recuperala aquí
+                    
+                    input(type="submit" value="Crear Cuenta" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg py-2 transition-all cursor-pointer")
