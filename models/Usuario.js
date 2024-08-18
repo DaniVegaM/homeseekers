@@ -25,8 +25,20 @@ const Usuario = db.define('usuarios', {
         beforeCreate: async (usuario) => {
             const salt = await bcrypt.genSalt(10); //El 10 significa las rondas que hace de hasheo
             usuario.password = await bcrypt.hash(usuario.password, salt);
+        },
+    },
+    scopes:{
+        eliminarPassword: {
+            attributes: {
+                exclude: ['password', 'token', 'confirmado', 'createdAt', 'updatedAt']
+            }
         }
     }
 });
+
+//Metodos personalizados
+Usuario.prototype.verificarPassword = function (password) {
+    return bcrypt.compareSync(password, this.password);
+}
 
 export default Usuario;

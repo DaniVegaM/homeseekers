@@ -7,7 +7,11 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "css": "postcss ./public/css/tailwind.css -o ./public/css/app.css --watch"
+    "css": "postcss ./public/css/tailwind.css -o ./public/css/app.css --watch",
+    "js": "webpack --watch",
+    "dev": "concurrently \"npm run css\" \"npm run js\"",
+    "db:importar": "node ./seed/seeder.js -i",
+    "db:eliminar": "node ./seed/seeder.js -e"
   },
   "repository": {
     "type": "git",
@@ -32,6 +36,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.2",
     "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4",
@@ -40,8 +45,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
     "postcss": "^8.4.39",
     "postcss-cli": "^11.0.0",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.4",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
   }
 }
