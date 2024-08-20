@@ -1,7 +1,8 @@
 import express from 'express';
 import {body} from 'express-validator'; //body solo se ocupa cuando validas desde el router
-import {admin, create, save} from '../controllers/propiedadController.js';
+import {admin, create, save, addImage, saveImage} from '../controllers/propiedadController.js';
 import protegerRuta from '../middleware/protegerRuta.js';
+import upload from '../middleware/subirImagen.js';
 
 const router = express.Router();
 
@@ -17,7 +18,10 @@ router.post('/my-properties/create', protegerRuta,
     body('estacionamiento').isNumeric().withMessage("Selecciona la cantidad de estacionamientos"), 
     body('wc').isNumeric().withMessage("Selecciona la cantidad de baños"),
     body('lat').notEmpty().withMessage("Ubica la propiedad en el mapa"),
-    save);
+    save
+);
+router.get('/my-properties/add-image/:id', protegerRuta, addImage);
+router.post('/my-properties/add-image/:id',protegerRuta ,upload.single('imagen'), saveImage);
 
 
 export default router;
