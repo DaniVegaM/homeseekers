@@ -1,11 +1,23 @@
 import {Precio, Categoria, Propiedad} from '../models/index.js'
 import {validationResult} from 'express-validator';
 
-const admin = (req, res) => {
-    // console.log(obtenerUsuarioDeToken(req.cookies._token))
-    /*NOTA: Falta crear una funcion para comprobar el JWT y ver que siga firmado y todo para validar*/
+const admin = async (req, res) => {
+    
+    const {id} = req.usuario;
+    
+    const propiedades = await Propiedad.findAll({
+        where:{usuarioId: id},
+        //Esto cruza la información de las tablas y se trae la información que coincide
+        //NOTA: Esto solo se puede si antes ya lo habíamos relacionado con un belongsTo o algo por el estilo
+        include:[
+            {model: Categoria, as: 'categoria'},
+            {model: Precio, as: 'precio'}
+        ]
+    });
+
     res.render('properties/admin', {
         pagina: 'Mis propiedades',
+        propiedades,
         nombre: req.usuario.nombre
     });
 }
@@ -143,10 +155,104 @@ const saveImage = async (req, res, next) => {
     }
 }
 
+const edit = async (req,res) => {
+
+    const {id} = req.params;
+
+    //Validar que la propiedad existe
+    const propiedad = await Propiedad.findByPk(id);
+
+    if(!propiedad)
+        return res.redirect('/my-properties')
+
+    //Revisar que quien visita la url es el mismo que creó la propiedad
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString())
+        return res.redirect('/my-properties')
+
+
+    //Consultar modelo de precio y categoria para pasarlo a la vista
+    const [categorias, precios] = await Promise.all([
+        Categoria.findAll(),
+        Precio.findAll()
+    ]);
+
+    res.render('properties/edit', {
+        pagina: `Editar Propiedad: ${propiedad.titulo}`,
+        csrfToken: req.csrfToken(),
+        categorias,
+        precios,
+        datos: propiedad,
+        nombre: req.usuario.nombre
+    });
+}
+
+const saveUpdate = async (req,res) =>{
+    //Verificar validación
+    let resultado = validationResult(req);
+
+    console.log(resultado)
+    if(!resultado.isEmpty()){
+        //Consultar modelo de precio y categoria para pasarlo a la vista
+        const [categorias, precios] = await Promise.all([
+            Categoria.findAll(),
+            Precio.findAll()
+        ]);
+
+        //Pasamos errores a la vista
+        return res.render('properties/edit', {
+            pagina: `Editar Propiedad`,
+            csrfToken: req.csrfToken(),
+            categorias,
+            precios,
+            errores: resultado.array(),
+            datos: req.body,
+            nombre: req.usuario.nombre
+        })
+    }
+
+
+    const {id} = req.params;
+
+    //Validar que la propiedad existe
+    const propiedad = await Propiedad.findByPk(id);
+
+    if(!propiedad)
+        return res.redirect('/my-properties')
+
+    //Revisar que quien visita la url es el mismo que creó la propiedad
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString())
+        return res.redirect('/my-properties')
+
+    //Reescribir el objeto y actualizarlo
+
+    try{
+        const {titulo, descripcion, habitaciones, estacionamiento, wc, calle, lat, lng, precio: precioId, categoria: categoriaId} = req.body;
+        propiedad.set({
+            titulo,
+            descripcion,
+            habitaciones,
+            estacionamiento,
+            wc,
+            calle,
+            lat,
+            lng,
+            precioId,
+            categoriaId
+        })
+        await propiedad.save();
+
+        res.redirect('my-properties');
+    } catch(error){
+        console.log(error);
+    }
+}
+
 export{
     admin,
     create,
     save,
     addImage,
-    saveImage
+    saveImage,
+    edit,
+    saveUpdate
 }
