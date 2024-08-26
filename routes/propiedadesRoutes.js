@@ -1,6 +1,6 @@
 import express from 'express';
 import {body} from 'express-validator'; //body solo se ocupa cuando validas desde el router
-import {admin, create, save, addImage, saveImage, edit, saveUpdate} from '../controllers/propiedadController.js';
+import {admin, create, save, addImage, saveImage, edit, saveUpdate, deletee, showProperty} from '../controllers/propiedadController.js';
 import protegerRuta from '../middleware/protegerRuta.js';
 import upload from '../middleware/subirImagen.js';
 
@@ -38,5 +38,11 @@ router.post('/my-properties/edit/:id', protegerRuta,
     body('lat').notEmpty().withMessage("Ubica la propiedad en el mapa"),
     saveUpdate
 );
+
+router.post('/my-properties/delete/:id', protegerRuta, deletee)
+
+
+//Area publica
+router.get('/property/:id', showProperty);
 
 export default router;
