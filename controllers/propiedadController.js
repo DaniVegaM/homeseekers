@@ -3,25 +3,60 @@ import {Precio, Categoria, Propiedad} from '../models/index.js'
 import {validationResult} from 'express-validator';
 
 const admin = async (req, res) => {
-    
-    const {id} = req.usuario;
-    
-    const propiedades = await Propiedad.findAll({
-        where:{usuarioId: id},
-        //Esto cruza la información de las tablas y se trae la información que coincide
-        //NOTA: Esto solo se puede si antes ya lo habíamos relacionado con un belongsTo o algo por el estilo
-        include:[
-            {model: Categoria, as: 'categoria'},
-            {model: Precio, as: 'precio'}
-        ]
-    });
 
-    res.render('properties/admin', {
-        pagina: 'Mis propiedades',
-        csrfToken: req.csrfToken(),
-        propiedades,
-        nombre: req.usuario.nombre
-    });
+    //Leer QueryString (/pagina?page=1&order=desc)
+    //Para agregar varios valores en el queryString ocupamos el &
+    const {page} = req.query;
+    console.log(page)
+
+    const regex = /^[0-9]$/;
+    if(!regex.test(page))
+        return res.redirect('/my-properties?page=1');
+
+    try {
+        const {id} = req.usuario;
+
+        //Limites y Offset para el paginador
+        const limit = 5;
+        const offset = ((page*limit) - limit); //El offset es como el número de registros que se va a saltar
+        
+        const [propiedades, total] = await Promise.all([
+            Propiedad.findAll({
+                limit, //Este limit ya existe dentro de finAll
+                offset, //Tambien este offset ya existe
+                where:{usuarioId: id},
+                //Esto cruza la información de las tablas y se trae la información que coincide
+                //NOTA: Esto solo se puede si antes ya lo habíamos relacionado con un belongsTo o algo por el estilo
+                include:[
+                    {model: Categoria, as: 'categoria'},
+                    {model: Precio, as: 'precio'}
+                ]
+            }),
+            Propiedad.count({
+                where:{
+                    usuarioId: id
+                }
+            })
+        ])
+        
+
+    
+        res.render('properties/admin', {
+            pagina: 'Mis propiedades',
+            csrfToken: req.csrfToken(),
+            propiedades,
+            nombre: req.usuario.nombre,
+            //Es el numero de paginas que tendremos de acuerdo con el numero de propiedades que tiene el usuario
+            paginas: Math.ceil(total / limit),
+            page:Number(page), //Recuerda que es la pagina actual
+            total,
+            offset,
+            limit
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    
 }
 
 //Formulario para crear una nueva propiedad
