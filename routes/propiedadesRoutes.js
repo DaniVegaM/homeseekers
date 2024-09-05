@@ -2,6 +2,7 @@ import express from 'express';
 import {body} from 'express-validator'; //body solo se ocupa cuando validas desde el router
 import {admin, create, save, addImage, saveImage, edit, saveUpdate, deletee, showProperty} from '../controllers/propiedadController.js';
 import protegerRuta from '../middleware/protegerRuta.js';
+import identificarUsuario from '../middleware/identificarUsuario.js';
 import upload from '../middleware/subirImagen.js';
 
 const router = express.Router();
@@ -43,6 +44,6 @@ router.post('/my-properties/delete/:id', protegerRuta, deletee)
 
 
 //Area publica
-router.get('/property/:id', showProperty);
+router.get('/property/:id', identificarUsuario ,showProperty);
 
 export default router;

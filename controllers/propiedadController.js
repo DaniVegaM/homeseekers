@@ -1,6 +1,7 @@
 import {unlink} from 'node:fs/promises'
 import {Precio, Categoria, Propiedad} from '../models/index.js'
 import {validationResult} from 'express-validator';
+import {esVendedor} from '../helpers/index.js'
 
 const admin = async (req, res) => {
 
@@ -323,9 +324,14 @@ const showProperty = async(req,res) => {
         return res.redirect('/404');
     }
 
+
+
     res.render('properties/show', {
         propiedad,
-        pagina: propiedad.titulo
+        pagina: propiedad.titulo,
+        csrfToken: req.csrfToken(),
+        usuario: req.usuario,
+        esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId)
     });
 }
 
