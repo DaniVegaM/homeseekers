@@ -6,4 +6,7 @@ header.bg-indigo-600.p-4
                 p(class="uppercase text-white font-bold") Bienvenido #{nombre}!
                 nav(class="flex my-5 text-sm flex-col md:flex-row items-center justify-center gap-5 font-bold text-white md:gap-3")
                     a(href="/my-properties") Mis propiedades
-                    a(href="" class="bg-indigo-800 py-2 px-10 rounded-lg hover:bg-indigo-900 transition-all md:ml-10 justify-center items-center") Cerrar Sesión
+
+                    form(action="/auth/logout" method="POST")
+                        input(type="hidden" name="_csrf" value=csrfToken)
+                        input(type="submit" class="cursor-pointer bg-indigo-800 py-2 px-10 rounded-lg hover:bg-indigo-900 transition-all md:ml-10 justify-center items-center" value="Cerrar Sesion")

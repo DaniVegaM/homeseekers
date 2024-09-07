@@ -70,7 +70,6 @@ const notFound = (req, res) =>{
 }
 
 const searchEngine = async (req, res) =>{
-    console.log("POSSSSSSSSSSSSSSSSSST")
     const {termino} = req.body;
     //Validar que termino no este vacío
     if(!termino.trim())

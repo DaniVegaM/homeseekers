@@ -47,20 +47,26 @@ block contenido
 
                 if !esVendedor
 
-                    h3(class="text-2xl text-center my-10 font-extrabold text-gray-900") Vendedor
-                    if !usuario
+                    h3(class="text-2xl text-center my-10 font-extrabold text-gray-900") Contacta al Vendedor
+                    if enviado 
+                        p(class="p-2 text-center bg-green-100 text-green-600 uppercase font-bold") Mensaje enviado correctamente
+                    else if !usuario
                         div(class="flex justify-center gap-2 flex-col mb-5")
                             p.text-center Si deseas contactar al vendedor debes 
                                 br
                             a(class="text-indigo-600 font-bold text-center" href="/auth/register") crear una cuenta
                     else 
                         div(class="flex justify-center gap-2 flex-col mb-5")
+                            if errores 
+                                div(class="max-w-md mx-auto")
+                                    each error in errores
+                                        p.bg-red-600.text-white.uppercase.text-xs.text-center.p-2.mb-1.font-bold= error.msg
                             form(method="POST")
                                 input(type="hidden" name="_csrf" value=csrfToken)
 
                                 div(class="space-y-3 p-4")
                                     label(for="mensaje") Mensaje 
-                                    textarea(placeholder="Coloca tu mensaje aquí" class="w-full py-2 border border-gray-300 rounded-lg shadow placeholder-gray-400" id="mensaje" name="mensaje")
+                                    textarea(placeholder="Coloca tu mensaje aquí" class="px-2 w-full py-2 border border-gray-300 rounded-lg shadow placeholder-gray-400" id="mensaje" name="mensaje")
 
                                     input(type="submit" value="Enviar Mensaje" class="rounded py-2 hover:bg-indigo-800 transition-all bg-indigo-600 text-white font-bold uppercase text-sm w-full cursor-pointer")
 block scripts 

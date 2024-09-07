@@ -1,7 +1,7 @@
 import {unlink} from 'node:fs/promises'
-import {Precio, Categoria, Propiedad} from '../models/index.js'
+import {Precio, Categoria, Propiedad, Mensaje, Usuario} from '../models/index.js'
 import {validationResult} from 'express-validator';
-import {esVendedor} from '../helpers/index.js'
+import {esVendedor, formatearFecha} from '../helpers/index.js'
 
 const admin = async (req, res) => {
 
@@ -18,19 +18,20 @@ const admin = async (req, res) => {
         const {id} = req.usuario;
 
         //Limites y Offset para el paginador
-        const limit = 5;
+        const limit = 10;
         const offset = ((page*limit) - limit); //El offset es como el número de registros que se va a saltar
         
         const [propiedades, total] = await Promise.all([
             Propiedad.findAll({
-                limit, //Este limit ya existe dentro de finAll
+                limit, //Este limit ya existe dentro de findAll
                 offset, //Tambien este offset ya existe
                 where:{usuarioId: id},
                 //Esto cruza la información de las tablas y se trae la información que coincide
                 //NOTA: Esto solo se puede si antes ya lo habíamos relacionado con un belongsTo o algo por el estilo
                 include:[
                     {model: Categoria, as: 'categoria'},
-                    {model: Precio, as: 'precio'}
+                    {model: Precio, as: 'precio'},
+                    {model: Mensaje, as: 'mensajes'}
                 ]
             }),
             Propiedad.count({
@@ -308,6 +309,30 @@ const deletee= async (req,res) =>{
     res.redirect('/my-properties');
 }
 
+//Modifica el estado de la propiedad
+const changeState = async (req, res) => {
+    const {id} = req.params;
+
+    //Validar que la propiedad existe
+    const propiedad = await Propiedad.findByPk(id);
+
+    if(!propiedad)
+        return res.redirect('/my-properties')
+
+    //Revisar que quien visita la url es el mismo que creó la propiedad
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString())
+        return res.redirect('/my-properties')
+
+    //Actualizar
+    propiedad.publicado = !propiedad.publicado;
+
+    await propiedad.save();
+
+    res.json({
+        resultado: true
+    })
+}
+
 //Muestra una propiedad
 
 const showProperty = async(req,res) => {
@@ -320,7 +345,7 @@ const showProperty = async(req,res) => {
             {model: Precio, as: 'precio'}
         ]
     });
-    if(!propiedad){
+    if(!propiedad || !propiedad.publicado){
         return res.redirect('/404');
     }
 
@@ -335,6 +360,83 @@ const showProperty = async(req,res) => {
     });
 }
 
+const sendMessage = async (req, res) => {
+    const {id} = req.params;
+    //Comprobar que la propiedad exista
+    const propiedad = await Propiedad.findByPk(id, {
+        include:[
+            {model: Categoria, as: 'categoria'},
+            {model: Precio, as: 'precio'}
+        ]
+    });
+    if(!propiedad){
+        return res.redirect('/404');
+    }
+
+    //Renderizar los errores
+    //Verificar validación
+    let resultado = validationResult(req);
+
+    console.log(resultado)
+    if(!resultado.isEmpty()){
+        return res.render('properties/show', {
+            propiedad,
+            pagina: propiedad.titulo,
+            csrfToken: req.csrfToken(),
+            usuario: req.usuario,
+            esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+            errores: resultado.array()
+        });
+    }
+
+    const {mensaje} = req.body;
+    const {id: propiedadId} = req.params;
+    const {id: usuarioId} = req.usuario;
+
+    //Almacenar el mensaje
+    await Mensaje.create({
+        mensaje,
+        propiedadId,
+        usuarioId
+    })
+
+    //IDEA: Crear una cookie donde se almacene usuario y propiedad para que no se envien tantos mensajes
+    //Y despues de cierto tiempo si no se contactan entonces se debe habilitar para enviar otro mensaje
+
+    res.redirect('/');
+    
+}
+
+//Leer mensajes recibidor
+const viewMessages = async (req, res) =>{
+    const {id} = req.params;
+
+    //Validar que la propiedad existe
+    const propiedad = await Propiedad.findByPk(id, {
+        include:[
+            {model: Mensaje, as: 'mensajes', 
+                include: [
+                    {model: Usuario.scope('eliminarPassword'), as: 'usuario'}
+                ]
+            }
+        ]
+    });
+
+    if(!propiedad)
+        return res.redirect('/my-properties')
+
+    //Revisar que quien visita la url es el mismo que creó la propiedad
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString())
+        return res.redirect('/my-properties')
+
+
+    res.render('properties/messages', {
+        pagina: `Mensajes de la propiedad: ${propiedad.titulo}`,
+        mensajes: propiedad.mensajes,
+        formatearFecha //Nota como podemos pasar funciones
+    })
+}
+
 export{
     admin,
     create,
@@ -344,5 +446,8 @@ export{
     edit,
     saveUpdate,
     deletee,
-    showProperty
+    changeState,
+    showProperty,
+    sendMessage,
+    viewMessages
 }
