@@ -28,13 +28,17 @@ const startPage = async (req, res) => {
         })
     ])
 
+    console.log(req.usuario)
+
     res.render('startPage',{
         pagina: 'Inicio',
         categorias,
         precios,
         casas,
         departamentos,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        nombre: req.usuario?.nombre,
+        usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
     });
 }
 
@@ -58,14 +62,18 @@ const categories = async(req, res) =>{
     res.render('categoria', {
         pagina: categoria.nombre + 's en Venta',
         propiedades,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        nombre: req.usuario?.nombre,
+        usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
     })
 }
 
 const notFound = (req, res) =>{
     res.render('404', {
         pagina: 'Página no encontrada',
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        nombre: req.usuario?.nombre,
+        usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
     })
 }
 
@@ -90,7 +98,9 @@ const searchEngine = async (req, res) =>{
     res.render('busqueda', {
         pagina: 'Resultados de la busqueda',
         propiedades,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        nombre: req.usuario?.nombre,
+        usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
     })
 }
 

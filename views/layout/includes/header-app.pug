@@ -3,9 +3,18 @@ header.bg-indigo-600.p-4
                 a(href="/")
                     h1.text-2xl.text-white.font-normal.text-center Home
                         span.font-extrabold Seekers
-                nav(class="flex my-5 text-sm flex-col md:flex-row items-center justify-center gap-5 font-bold text-white md:gap-3")
-                    a(href="/auth/register") Crear Cuenta
-                    a(href="/auth/login") Iniciar Sesión
+                if usuarioLogeado
+                    p(class="uppercase text-white font-bold") Bienvenido #{nombre}!
+                    nav(class="flex my-5 text-sm flex-col md:flex-row items-center justify-center gap-5 font-bold text-white md:gap-3")
+                        a(href="/my-properties") Mis propiedades
+
+                        form(action="/auth/logout" method="POST")
+                            input(type="hidden" name="_csrf" value=csrfToken)
+                            input(type="submit" class="cursor-pointer bg-indigo-800 py-2 px-10 rounded-lg hover:bg-indigo-900 transition-all md:ml-10 justify-center items-center" value="Cerrar Sesion")
+                else
+                    nav(class="flex my-5 text-sm flex-col md:flex-row items-center justify-center gap-5 font-bold text-white md:gap-3")
+                        a(href="/auth/register") Crear Cuenta
+                        a(href="/auth/login") Iniciar Sesión
 
 div(class="bg-indigo-700 py-5 hidden lg:block")
     div(class="container mx-auto flex justify-between items-center")

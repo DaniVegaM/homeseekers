@@ -349,14 +349,17 @@ const showProperty = async(req,res) => {
         return res.redirect('/404');
     }
 
+    console.log(req.usuario)
 
 
     res.render('properties/show', {
         propiedad,
         pagina: propiedad.titulo,
         csrfToken: req.csrfToken(),
-        usuario: req.usuario,
-        esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId)
+        usuario: req?.usuario,
+        nombre: req.usuario?.nombre,
+        esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+        usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
     });
 }
 
@@ -385,7 +388,9 @@ const sendMessage = async (req, res) => {
             csrfToken: req.csrfToken(),
             usuario: req.usuario,
             esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
-            errores: resultado.array()
+            errores: resultado.array(),
+            nombre: req.usuario?.nombre,
+            usuarioLogeado: req?.usuario !== null && req?.usuario !== undefined
         });
     }
 

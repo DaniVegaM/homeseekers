@@ -13,7 +13,7 @@ router.get('/my-properties/create', protegerRuta,create);
 router.post('/my-properties/create', protegerRuta,
     body('titulo').notEmpty().withMessage('El título del anuncio es obligatorio'), 
     body('descripcion').notEmpty().withMessage('La descripción es obligatoria')
-                        .isLength({max: 200}).withMessage('La descripción es muy larga'),
+                        .isLength({max: 400}).withMessage('La descripción es muy larga'),
     body('categoria').isNumeric().withMessage("Selecciona una categoría"), 
     body('precio').isNumeric().withMessage("Selecciona un rango de precios"), 
     body('habitaciones').isNumeric().withMessage("Selecciona la cantidad de habitaciones"), 

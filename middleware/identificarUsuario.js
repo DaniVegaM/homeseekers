@@ -24,6 +24,5 @@ const identificarUsuario = async (req, res, next) => {
         //Si la cookie ya expiró o algo por el estilo que vuelva a iniciar sesion
         return res.clearCookie('_token').redirect('/auth/login');
     }
-    next();
 }
 export default identificarUsuario;
