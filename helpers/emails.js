@@ -34,7 +34,9 @@ const emailPasswordForgotten = async datos =>{
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
-      }
+      },
+      logger: true, // Activa el log de salida
+      debug: true // Activa los mensajes de depuración
     });
     const {nombre, email, token} = datos;
 
