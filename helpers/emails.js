@@ -28,6 +28,11 @@ const emailRegistro = async datos =>{
 }
 
 const emailPasswordForgotten = async datos =>{
+  console.log('EMAIL_HOST:', process.env.EMAIL_HOST);
+  console.log('EMAIL_PORT:', process.env.EMAIL_PORT);
+  console.log('EMAIL_USER:', process.env.EMAIL_USER);
+  console.log('EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD);
+
   const transport = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
