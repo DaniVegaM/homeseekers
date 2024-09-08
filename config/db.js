@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const db = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env.BD_PASSWORD, {
-    host: process.env.BD_ROOT,
+    host: process.env.BD_HOST,
     port: 3307,
     dialect: 'mysql',
     define: {
