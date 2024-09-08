@@ -13,7 +13,7 @@ const emailRegistro = async datos =>{
 
       //Enviar email
       await transport.sendMail({
-        from: 'HomeSeekers.com',
+        from: '7ba3c5001@smtp-brevo.com',
         to: email,
         subject: 'Confirma tu cuenta en HomeSeekers', // Subject line
         text: '', // plain text body
