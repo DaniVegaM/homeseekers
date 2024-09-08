@@ -4,7 +4,6 @@ const emailRegistro = async datos =>{
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
-        secure: false,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASSWORD
@@ -14,7 +13,7 @@ const emailRegistro = async datos =>{
 
       //Enviar email
       await transport.sendMail({
-        from: '7ba3c5001@smtp-brevo.com',
+        from: 'HomeSeekers.com',
         to: email,
         subject: 'Confirma tu cuenta en HomeSeekers', // Subject line
         text: '', // plain text body
@@ -27,7 +26,6 @@ const emailRegistro = async datos =>{
 }
 
 const emailPasswordForgotten = async datos =>{
-
   const transport = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
